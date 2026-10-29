@@ -29,20 +29,25 @@ CREATE TABLE players(
     FOREIGN KEY (position_id) REFERENCES positions(position_id)
 );
 
-CREATE TABLE gameweeks(
+CREATE TABLE gameweek(
     gameweek_id int PRIMARY KEY,
     name TEXT NOT NULL,
-    deadline_time DATE NOT NULL
+    deadline_time TIMESTAMPTZ NOT NULL
 );
 
 CREATE TABLE fixtures(
     fixture_id INT PRIMARY KEY,
-    home_team VARCHAR(100) NOT NULL,
+    kickoff_time TIMESTAMPTZ
+    home_team INT NOT NULL,
     home_team_score INT,
-    away_team VARCHAR(100) NOT NULL,
+    away_team INT NOT NULL,
     away_team_score INT,
     code INT UNIQUE NOT NULL,
-    event NOT NULL
+    event INT NOT NULL,
+
+    FOREIGN KEY (event) REFERENCES gameweek(gameweek_id),
+    FOREIGN KEY (home_team) REFERENCES teams(team_id),
+    FOREIGN KEY (home_team) REFERENCES teams(team_id)
 );
 
 
