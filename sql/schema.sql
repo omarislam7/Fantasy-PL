@@ -7,7 +7,7 @@ CREATE TABLE teams(
 
 CREATE TABLE positions(
     position_id int PRIMARY KEY,
-    singular_name varchar(50a) UNIQUE NOT NULL,
+    singular_name varchar(50) UNIQUE NOT NULL,
     singular_name_short varchar(5) UNIQUE NOT NULL,
     squad_select int NOT NULL,
     squad_min_play int NOT NULL,
@@ -31,6 +31,18 @@ CREATE TABLE players(
 
 CREATE TABLE gameweeks(
     gameweek_id int PRIMARY KEY,
-    name TEXT,
-    deadline_time
-)
+    name TEXT NOT NULL,
+    deadline_time DATE NOT NULL
+);
+
+CREATE TABLE fixtures(
+    fixture_id INT PRIMARY KEY,
+    home_team VARCHAR(100) NOT NULL,
+    home_team_score INT,
+    away_team VARCHAR(100) NOT NULL,
+    away_team_score INT,
+    code INT UNIQUE NOT NULL,
+    event NOT NULL
+);
+
+
