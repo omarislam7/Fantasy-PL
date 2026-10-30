@@ -14,9 +14,9 @@ print(teams_df.head())
 conn = connection() ##create the connection
 
 cursor = conn.cursor()
+
+cursor.execute("DELETE FROM teams;") ##TEMPORARYYY for testing
 for _, row in teams_df.iterrows():
-    cursor.execute("DELETE FROM teams;") ##TEMPORARYYY
-    
     cursor.execute(
         """
         INSERT INTO teams (team_id, code, short_name, name)
