@@ -41,6 +41,30 @@ for _,row in positions_df.iterrows():
         """,
         (row["position_id"], row["singular_name"], row["singular_name_short"], row["squad_select"], row["squad_min_play"], row["squad_max_play"])
     )
+
+#LOAD players table
+players_df = pd.DataFrame(data["elements"])
+players_df = players_df[["id", "first_name", "second_name", "team", "element_type", "photo", "birth_date", "code", "web_name"]]
+players_df = players_df.rename(columns=
+                               {"id": "player_id",
+                                "team": "team_id",
+                                "element_type": "position_id"})
+print(players_df.head(6))
+
+players_df["birth_date"] = players_df["birth_date"].astype(object)
+players_df.loc[players_df["birth_date"].isna(), "birth_date"] = None
+
+cursor.execute("DELETE FROM players;") ##TEMPPP
+
+for _,row in players_df.iterrows():
+    cursor.execute(
+        """
+        INSERT INTO players (player_id, first_name, second_name, team_id, position_id, photo, birth_date, code, web_name)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """,
+        (row["player_id"], row["first_name"], row["second_name"], row["team_id"], row["position_id"], row["photo"], row["birth_date"], row["code"], row["web_name"])
+    )
+
 conn.commit()
 cursor.close()
 conn.close()

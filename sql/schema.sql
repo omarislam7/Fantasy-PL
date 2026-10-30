@@ -23,7 +23,7 @@ CREATE TABLE players(
     team_id int NOT NULL,
     position_id int NOT NULL,
     photo TEXT,
-    birth_date DATE NOT NULL,
+    birth_date DATE,
 
     FOREIGN KEY (team_id) REFERENCES teams(team_id),
     FOREIGN KEY (position_id) REFERENCES positions(position_id)
