@@ -54,7 +54,7 @@ CREATE TABLE player_history (
     -- identifiers
     player_id INT NOT NULL,
     fixture_id INT NOT NULL,
-    opponent_team_id INT,
+    opponent_team_id INT NOT NULL,
     gameweek_id INT NOT NULL,
     was_home BOOLEAN NOT NULL,
     kickoff_time TIMESTAMPTZ NOT NULL,
@@ -101,12 +101,66 @@ CREATE TABLE player_history (
     selected INT NOT NULL,
     transfers_in INT NOT NULL,
     transfers_out INT NOT NULL,
-    
+
     PRIMARY KEY (player_id, fixture_id),
 
     FOREIGN KEY (player_id) REFERENCES players(player_id),
     FOREIGN KEY (fixture_id) REFERENCES fixtures(fixture_id),
     FOREIGN KEY (opponent_team_id) REFERENCES teams(team_id),
     FOREIGN KEY (gameweek_id) REFERENCES gameweek(gameweek_id)
+);
+
+CREATE TABLE history_past (
+    -- identifiers
+    season_name TEXT NOT NULL,
+    element_code INT NOT NULL,
+
+    -- cost and overall performance
+    start_cost INT NOT NULL,
+    end_cost INT NOT NULL,
+    total_points INT NOT NULL,
+    minutes INT NOT NULL,
+
+    -- attacking statistics
+    goals_scored INT NOT NULL,
+    assists INT NOT NULL,
+
+    -- defensive statistics
+    clean_sheets INT NOT NULL,
+    goals_conceded INT NOT NULL,
+    own_goals INT NOT NULL,
+
+    -- penalties, discipline, and goalkeeping
+    penalties_saved INT NOT NULL,
+    penalties_missed INT NOT NULL,
+    yellow_cards INT NOT NULL,
+    red_cards INT NOT NULL,
+    saves INT NOT NULL,
+
+    -- bonus and FPL performance metrics
+    bonus INT NOT NULL,
+    bps INT NOT NULL,
+    influence NUMERIC NOT NULL,
+    creativity NUMERIC NOT NULL,
+    threat NUMERIC NOT NULL,
+    ict_index NUMERIC NOT NULL,
+
+    -- defensive contribution metrics
+    clearances_blocks_interceptions INT NOT NULL,
+    recoveries INT NOT NULL,
+    tackles INT NOT NULL,
+    defensive_contribution INT NOT NULL,
+    starts INT NOT NULL,
+
+    -- expected statistics
+    expected_goals NUMERIC NOT NULL,
+    expected_assists NUMERIC NOT NULL,
+    expected_goal_involvements NUMERIC NOT NULL,
+    expected_goals_conceded NUMERIC NOT NULL,
+
+    -- constraints
+    PRIMARY KEY (season_name, element_code),
+
+    FOREIGN KEY (element_code) REFERENCES players(code)
 );
 
