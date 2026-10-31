@@ -13,6 +13,9 @@ print(teams_df.head())
 
 conn = connection() #create the connection
 cursor = conn.cursor()
+
+cursor.execute("DELETE FROM players;") ##TEMPPP
+cursor.execute("DELETE FROM positions;") ##TEMPPPP
 cursor.execute("DELETE FROM teams;") ##TEMPORARYYY for testing
 
 for _, row in teams_df.iterrows():
@@ -30,8 +33,6 @@ positions_df = positions_df[["id", "singular_name", "singular_name_short", "squa
 positions_df = positions_df.rename(columns=
                                    {"id": "position_id"})
 print(positions_df.head(3))
-
-cursor.execute("DELETE FROM positions;") ##TEMPPPP
 
 for _,row in positions_df.iterrows():
     cursor.execute(
@@ -54,7 +55,6 @@ print(players_df.head(6))
 players_df["birth_date"] = players_df["birth_date"].astype(object)
 players_df.loc[players_df["birth_date"].isna(), "birth_date"] = None
 
-cursor.execute("DELETE FROM players;") ##TEMPPP
 
 for _,row in players_df.iterrows():
     cursor.execute(
@@ -64,6 +64,8 @@ for _,row in players_df.iterrows():
         """,
         (row["player_id"], row["first_name"], row["second_name"], row["team_id"], row["position_id"], row["photo"], row["birth_date"], row["code"], row["web_name"])
     )
+
+
 
 conn.commit()
 cursor.close()
