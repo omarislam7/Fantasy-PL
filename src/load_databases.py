@@ -17,6 +17,7 @@ conn = connection() #create the connection
 cursor = conn.cursor()
 
 cursor.execute("DELETE FROM player_history;")
+cursor.execute("DELETE FROM history_past;")
 cursor.execute("DELETE FROM fixtures;") ##TEMPPP
 cursor.execute("DELETE FROM players;") ##TEMPPP
 cursor.execute("DELETE FROM positions;") ##TEMPPPP
@@ -115,43 +116,61 @@ for _,row in fixtures_df.iterrows():
     )
 
 #player history table insert
-
 players_df = players_df.sort_values("player_id") ##SORT PLAYER_ID SO IT INSERTED IN ORDER
+
 for player in players_df["player_id"]:
-
-    print(f"Loading player history for player_id: {player}")
-
+        
+    ##PLAYER_HISTORY TABLE
     player_data = fetch_players(player)
     player_history_df = pd.DataFrame(player_data["history"])
 
+    if not player_history_df.empty:
+        player_history_df = player_history_df[['element', 'fixture', 'opponent_team', 'total_points', 'was_home', 'kickoff_time', 'round', 'minutes', 'goals_scored', 
+                                            'assists', 'clean_sheets', 'goals_conceded', 'own_goals', 'penalties_saved', 'penalties_missed', 'yellow_cards','red_cards',
+                                                'saves', 'bonus', 'bps', 'influence', 'creativity', 'threat', 'ict_index', 'clearances_blocks_interceptions', 'recoveries',
+                                                'tackles', 'defensive_contribution', 'starts', 'expected_goals', 'expected_assists', 'expected_goal_involvements',
+                                                'expected_goals_conceded', 'value', 'transfers_balance', 'selected','transfers_in', 'transfers_out']]
+        
+        player_history_df = player_history_df.rename(columns=
+                                                    {"element": "player_id",
+                                                    "fixture": "fixture_id",
+                                                    "opponent_team": "opponent_team_id",
+                                                    "round": "gameweek_id"
+                                                    })
 
-    player_history_df = player_history_df[['element', 'fixture', 'opponent_team', 'total_points', 'was_home', 'kickoff_time', 'round', 'minutes', 'goals_scored', 
-                                           'assists', 'clean_sheets', 'goals_conceded', 'own_goals', 'penalties_saved', 'penalties_missed', 'yellow_cards','red_cards',
-                                            'saves', 'bonus', 'bps', 'influence', 'creativity', 'threat', 'ict_index', 'clearances_blocks_interceptions', 'recoveries',
-                                            'tackles', 'defensive_contribution', 'starts', 'expected_goals', 'expected_assists', 'expected_goal_involvements',
-                                            'expected_goals_conceded', 'value', 'transfers_balance', 'selected','transfers_in', 'transfers_out']]
+        columns = list(player_history_df.columns)
+        column_names = ", ".join(columns)
+
+        placeholders = ", ".join(["%s"] * len(columns))
+        for _,row in player_history_df.iterrows():
+            cursor.execute(
+                f"""
+                INSERT INTO player_history ({column_names})
+                VALUES ({placeholders})
+                """, 
+                tuple(row[col] for col in columns)
+            )
+
+        print(f"Finished Loading player_history table for: {player}") #JUST A CHECK
+
+    ##HISTORY_PAST TABLE INSERTION
+    player_past_history_df =  pd.DataFrame(player_data["history_past"]) ## NO NEED TO RENAME OR EVEN CHOOSE ANY COLUMNS, USE ALL OF THE COLUMNS
     
-    player_history_df = player_history_df.rename(columns=
-                                                 {"element": "player_id",
-                                                  "fixture": "fixture_id",
-                                                  "opponent_team": "opponent_team_id",
-                                                  "round": "gameweek_id"
-                                                  })
+    if not player_past_history_df.empty:
+        print(f"Loading history_past table for player_id: {player}") #JUST A CHECK
 
-    columns = list(player_history_df.columns)
-    column_names = ", ".join(columns)
+        columns_past = list(player_past_history_df.columns)
+        columns_past_names = ", ".join(columns_past)
+        placeholders_past = ", ".join(["%s"] * len(columns_past))
 
-    placeholders = ", ".join(["%s"] * len(columns))
-    for _,row in player_history_df.iterrows():
-        cursor.execute(
-            f"""
-            INSERT INTO player_history ({column_names})
-            VALUES ({placeholders})
-            """, 
-            tuple(row[col] for col in columns)
-        )
-
-
+        for _,row in player_past_history_df.iterrows():
+            cursor.execute(
+                f"""
+                INSERT INTO history_past({columns_past_names})
+                VALUES ({placeholders_past})
+                """,
+                tuple(row[col] for col in columns_past)
+            )
 
 conn.commit()
 cursor.close()
