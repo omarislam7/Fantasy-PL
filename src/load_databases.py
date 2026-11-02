@@ -1,4 +1,5 @@
 from fetch_fpl import fetch_data
+from fetch_fpl import fetch_fixtures
 import pandas as pd
 from connect import connection
 
@@ -81,7 +82,6 @@ for _,row in gameweek_df.iterrows():
         """,
         (row["gameweek_id"], row["name"], row["deadline_time"])
     )
-
 
 conn.commit()
 cursor.close()
