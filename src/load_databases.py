@@ -1,5 +1,6 @@
 from fetch_fpl import fetch_data
 from fetch_fpl import fetch_fixtures
+from fetch_fpl import fetch_players
 import pandas as pd
 from connect import connection
 
@@ -84,15 +85,16 @@ for _,row in gameweek_df.iterrows():
         (row["gameweek_id"], row["name"], row["deadline_time"])
     )
 
+#Fixture tables insert
 fixture_data = fetch_fixtures()
 fixtures_df = pd.DataFrame(fixture_data)
 
 fixtures_df = fixtures_df[["id","kickoff_time", "team_h", "team_h_score","team_a", "team_a_score", "code", "event"]]
 fixtures_df = fixtures_df.rename(columns=
                                    {"id": "fixture_id",
-                                    "team_h":"home_team",
+                                    "team_h":"home_team_id",
                                     "team_h_score": "home_team_score",
-                                    "team_a": "away_team",
+                                    "team_a": "away_team_id",
                                     "team_a_score": "away_team_score"
                                    })
 
@@ -110,6 +112,25 @@ for _,row in fixtures_df.iterrows():
         """,
         (row["fixture_id"], row["kickoff_time"], row["home_team"], row["home_team_score"], row["away_team"], row["away_team_score"], row["code"], row["event"])
     )
+
+#player history table insert
+for player in players_df["player_id"]:
+    player_data = fetch_players(player)
+    player_history_df = pd.DataFrame(player_data["history"])
+
+    player_history_df = player_history_df.rename(columns=
+                                                 {"element": "player_id",
+                                                  "fixture": "fixture_id",
+                                                  "opponent_team": "opponent_team_id",
+                                                  "round": "gameweek_id"
+                                                  })
+
+    for _,row in player_history_df.iterrows():
+        cursor.execute(
+            """
+            INSERT INTO player_history (player_id, )
+            """
+        )
 
 conn.commit()
 cursor.close()

@@ -46,9 +46,9 @@ CREATE TABLE gameweek(
 CREATE TABLE fixtures(
     fixture_id INT PRIMARY KEY,
     kickoff_time TIMESTAMPTZ,
-    home_team INT NOT NULL,
+    home_team_id INT NOT NULL,
     home_team_score INT,
-    away_team INT NOT NULL,
+    away_team_id INT NOT NULL,
     away_team_score INT,
     code INT UNIQUE NOT NULL,
     event INT NOT NULL,

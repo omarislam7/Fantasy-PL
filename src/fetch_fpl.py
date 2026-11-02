@@ -14,3 +14,8 @@ def fetch_fixtures():
     data_fix = fix_response.json()
     return data_fix
 
+def fetch_players(player_id):
+    player_url = f"https://fantasy.premierleague.com/api/element-summary/{player_id}/"
+    player_response = requests.get(player_url)
+    player_data = player_response.json()
+    return player_data
