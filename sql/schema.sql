@@ -54,8 +54,8 @@ CREATE TABLE fixtures(
     event INT NOT NULL,
 
     FOREIGN KEY (event) REFERENCES gameweek(gameweek_id),
-    FOREIGN KEY (home_team) REFERENCES teams(team_id),
-    FOREIGN KEY (away_team) REFERENCES teams(team_id)
+    FOREIGN KEY (home_team_id) REFERENCES teams(team_id),
+    FOREIGN KEY (away_team_id) REFERENCES teams(team_id)
 );
 
 CREATE TABLE player_history (

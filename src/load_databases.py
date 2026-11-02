@@ -16,6 +16,7 @@ print(teams_df.head())
 conn = connection() #create the connection
 cursor = conn.cursor()
 
+cursor.execute("DELETE FROM player_history;")
 cursor.execute("DELETE FROM fixtures;") ##TEMPPP
 cursor.execute("DELETE FROM players;") ##TEMPPP
 cursor.execute("DELETE FROM positions;") ##TEMPPPP
@@ -107,16 +108,22 @@ for col in nullable_cols:
 for _,row in fixtures_df.iterrows():
     cursor.execute(
         """
-        INSERT INTO fixtures (fixture_id, kickoff_time, home_team, home_team_score, away_team, away_team_score, code, event)
+        INSERT INTO fixtures (fixture_id, kickoff_time, home_team_id, home_team_score, away_team_id, away_team_score, code, event)
         VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
         """,
-        (row["fixture_id"], row["kickoff_time"], row["home_team"], row["home_team_score"], row["away_team"], row["away_team_score"], row["code"], row["event"])
+        (row["fixture_id"], row["kickoff_time"], row["home_team_id"], row["home_team_score"], row["away_team_id"], row["away_team_score"], row["code"], row["event"])
     )
 
 #player history table insert
+
+players_df = players_df.sort_values("player_id") ##SORT PLAYER_ID SO IT INSERTED IN ORDER
 for player in players_df["player_id"]:
+
+    print(f"Loading player history for player_id: {player}")
+
     player_data = fetch_players(player)
     player_history_df = pd.DataFrame(player_data["history"])
+
 
     player_history_df = player_history_df[['element', 'fixture', 'opponent_team', 'total_points', 'was_home', 'kickoff_time', 'round', 'minutes', 'goals_scored', 
                                            'assists', 'clean_sheets', 'goals_conceded', 'own_goals', 'penalties_saved', 'penalties_missed', 'yellow_cards','red_cards',
@@ -143,6 +150,8 @@ for player in players_df["player_id"]:
             """, 
             tuple(row[col] for col in columns)
         )
+
+
 
 conn.commit()
 cursor.close()
