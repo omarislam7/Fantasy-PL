@@ -118,6 +118,12 @@ for player in players_df["player_id"]:
     player_data = fetch_players(player)
     player_history_df = pd.DataFrame(player_data["history"])
 
+    player_history_df = player_history_df[['element', 'fixture', 'opponent_team', 'total_points', 'was_home', 'kickoff_time', 'round', 'minutes', 'goals_scored', 
+                                           'assists', 'clean_sheets', 'goals_conceded', 'own_goals', 'penalties_saved', 'penalties_missed', 'yellow_cards','red_cards',
+                                            'saves', 'bonus', 'bps', 'influence', 'creativity', 'threat', 'ict_index', 'clearances_blocks_interceptions', 'recoveries',
+                                            'tackles', 'defensive_contribution', 'starts', 'expected_goals', 'expected_assists', 'expected_goal_involvements',
+                                            'expected_goals_conceded', 'value', 'transfers_balance', 'selected','transfers_in', 'transfers_out']]
+    
     player_history_df = player_history_df.rename(columns=
                                                  {"element": "player_id",
                                                   "fixture": "fixture_id",
@@ -125,11 +131,17 @@ for player in players_df["player_id"]:
                                                   "round": "gameweek_id"
                                                   })
 
+    columns = list(player_history_df.columns)
+    column_names = ", ".join(columns)
+
+    placeholders = ", ".join(["%s"] * len(columns))
     for _,row in player_history_df.iterrows():
         cursor.execute(
-            """
-            INSERT INTO player_history (player_id, )
-            """
+            f"""
+            INSERT INTO player_history ({column_names})
+            VALUES ({placeholders})
+            """, 
+            tuple(row[col] for col in columns)
         )
 
 conn.commit()
