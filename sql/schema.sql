@@ -1,3 +1,11 @@
+DROP TABLE IF EXISTS history_past;
+DROP TABLE IF EXISTS player_history;
+DROP TABLE IF EXISTS fixtures;
+DROP TABLE IF EXISTS gameweek;
+DROP TABLE IF EXISTS players;
+DROP TABLE IF EXISTS positions;
+DROP TABLE IF EXISTS teams;
+
 CREATE TABLE teams(
     team_id int PRIMARY KEY,
     code int UNIQUE NOT NULL,

@@ -16,6 +16,7 @@ cursor = conn.cursor()
 
 cursor.execute("DELETE FROM players;") ##TEMPPP
 cursor.execute("DELETE FROM positions;") ##TEMPPPP
+cursor.execute("DELETE FROM gameweek;")
 cursor.execute("DELETE FROM teams;") ##TEMPORARYYY for testing
 
 for _, row in teams_df.iterrows():
@@ -65,6 +66,21 @@ for _,row in players_df.iterrows():
         (row["player_id"], row["first_name"], row["second_name"], row["team_id"], row["position_id"], row["photo"], row["birth_date"], row["code"], row["web_name"])
     )
 
+
+##Gameweek data
+gameweek_df = pd.DataFrame(data["events"])
+gameweek_df = gameweek_df[["id", "name", "deadline_time"]]
+gameweek_df = gameweek_df.rename(columns=
+                                 {"id": "gameweek_id"})
+
+for _,row in gameweek_df.iterrows():
+    cursor.execute(
+        """
+        INSERT INTO gameweek (gameweek_id, name, deadline_time)
+        VALUES (%s, %s, %s)
+        """,
+        (row["gameweek_id"], row["name"], row["deadline_time"])
+    )
 
 
 conn.commit()
