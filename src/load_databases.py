@@ -15,6 +15,7 @@ print(teams_df.head())
 conn = connection() #create the connection
 cursor = conn.cursor()
 
+cursor.execute("DELETE FROM fixtures;") ##TEMPPP
 cursor.execute("DELETE FROM players;") ##TEMPPP
 cursor.execute("DELETE FROM positions;") ##TEMPPPP
 cursor.execute("DELETE FROM gameweek;")
@@ -81,6 +82,33 @@ for _,row in gameweek_df.iterrows():
         VALUES (%s, %s, %s)
         """,
         (row["gameweek_id"], row["name"], row["deadline_time"])
+    )
+
+fixture_data = fetch_fixtures()
+fixtures_df = pd.DataFrame(fixture_data)
+
+fixtures_df = fixtures_df[["id","kickoff_time", "team_h", "team_h_score","team_a", "team_a_score", "code", "event"]]
+fixtures_df = fixtures_df.rename(columns=
+                                   {"id": "fixture_id",
+                                    "team_h":"home_team",
+                                    "team_h_score": "home_team_score",
+                                    "team_a": "away_team",
+                                    "team_a_score": "away_team_score"
+                                   })
+
+nullable_cols = ["kickoff_time", "home_team_score" , "away_team_score"]
+
+for col in nullable_cols:
+    fixtures_df[col] = fixtures_df[col].astype(object)
+    fixtures_df.loc[fixtures_df[col].isna(), col] = None
+
+for _,row in fixtures_df.iterrows():
+    cursor.execute(
+        """
+        INSERT INTO fixtures (fixture_id, kickoff_time, home_team, home_team_score, away_team, away_team_score, code, event)
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
+        """,
+        (row["fixture_id"], row["kickoff_time"], row["home_team"], row["home_team_score"], row["away_team"], row["away_team_score"], row["code"], row["event"])
     )
 
 conn.commit()
