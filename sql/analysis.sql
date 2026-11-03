@@ -6,7 +6,6 @@ WITH player_points AS (
 	JOIN player_history ph
 		ON p.player_id = ph.player_id
 	GROUP BY p.player_id
-	ORDER BY total_points DESC
 ),
 ranked_points AS(
 	SELECT player_name,
@@ -38,4 +37,23 @@ ranked_attack AS (
 SELECT *
 FROM ranked_attack
 WHERE attack_rank <= 10;
+
+/* 3] Which 10 players have the highest expected goal involvements, where xGI = expected goals + expected assists? */
+WITH player_expected_invo AS (
+	SELECT p.first_name ||' '|| p.second_name AS player_name,
+		SUM(ph.expected_goal_involvements) AS total_xgi
+	FROM players p 
+	JOIN player_history ph
+		ON p.player_id = ph.player_id
+	GROUP BY p.player_id
+),
+ranked_involvements AS(
+	SELECT *,
+		DENSE_RANK() OVER(ORDER BY total_xgi DESC) as xgi_rank
+	FROM player_expected_invo
+)
+
+SELECT *
+FROM ranked_involvements
+WHERE xgi_rank <= 10;
 
